@@ -49,7 +49,12 @@ class _AppointmentFormScreenState extends State<AppointmentFormScreen> {
     await context.read<AppointmentProvider>().selectAppointment(widget.appointmentId!);
     final appointment = context.read<AppointmentProvider>().selectedAppointment;
     if (appointment != null) {
-      _selectedPatient = appointment.patient;
+      // Buscar el paciente en la lista cargada por su ID para evitar problemas de referencia
+      final patientProvider = context.read<PatientProvider>();
+      _selectedPatient = patientProvider.patients.firstWhere(
+        (p) => p.id == appointment.patientId,
+        orElse: () => appointment.patient!,
+      );
       _appointmentDate = DateTime(
         appointment.appointmentDate.year,
         appointment.appointmentDate.month,
